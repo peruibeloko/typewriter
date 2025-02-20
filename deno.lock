@@ -10,7 +10,8 @@
     "jsr:@std/encoding@~0.224.2": "0.224.3",
     "jsr:@std/path@^1.0.8": "1.0.8",
     "npm:effect@^3.12.7": "3.12.7",
-    "npm:jose@^5.9.6": "5.9.6"
+    "npm:jose@^5.9.6": "5.9.6",
+    "npm:otplib@^12.0.1": "12.0.1"
   },
   "jsr": {
     "@cross/deepmerge@1.0.0": {
@@ -44,6 +45,38 @@
     }
   },
   "npm": {
+    "@otplib/core@12.0.1": {
+      "integrity": "sha512-4sGntwbA/AC+SbPhbsziRiD+jNDdIzsZ3JUyfZwjtKyc/wufl1pnSIaG4Uqx8ymPagujub0o92kgBnB89cuAMA=="
+    },
+    "@otplib/plugin-crypto@12.0.1": {
+      "integrity": "sha512-qPuhN3QrT7ZZLcLCyKOSNhuijUi9G5guMRVrxq63r9YNOxxQjPm59gVxLM+7xGnHnM6cimY57tuKsjK7y9LM1g==",
+      "dependencies": [
+        "@otplib/core"
+      ]
+    },
+    "@otplib/plugin-thirty-two@12.0.1": {
+      "integrity": "sha512-MtT+uqRso909UkbrrYpJ6XFjj9D+x2Py7KjTO9JDPhL0bJUYVu5kFP4TFZW4NFAywrAtFRxOVY261u0qwb93gA==",
+      "dependencies": [
+        "@otplib/core",
+        "thirty-two"
+      ]
+    },
+    "@otplib/preset-default@12.0.1": {
+      "integrity": "sha512-xf1v9oOJRyXfluBhMdpOkr+bsE+Irt+0D5uHtvg6x1eosfmHCsCC6ej/m7FXiWqdo0+ZUI6xSKDhJwc8yfiOPQ==",
+      "dependencies": [
+        "@otplib/core",
+        "@otplib/plugin-crypto",
+        "@otplib/plugin-thirty-two"
+      ]
+    },
+    "@otplib/preset-v11@12.0.1": {
+      "integrity": "sha512-9hSetMI7ECqbFiKICrNa4w70deTUfArtwXykPUvSHWOdzOlfa9ajglu7mNCntlvxycTiOAXkQGwjQCzzDEMRMg==",
+      "dependencies": [
+        "@otplib/core",
+        "@otplib/plugin-crypto",
+        "@otplib/plugin-thirty-two"
+      ]
+    },
     "effect@3.12.7": {
       "integrity": "sha512-BsDTgSjLbL12g0+vGn5xkOgOVhRSaR3VeHmjcUb0gLvpXACJ9OgmlfeH+/FaAZwM5+omIF3I/j1gC5KJrbK1Aw==",
       "dependencies": [
@@ -59,8 +92,19 @@
     "jose@5.9.6": {
       "integrity": "sha512-AMlnetc9+CV9asI19zHmrgS/WYsWUwCn2R7RzlbJWD7F9eWYUTGyBmU9o6PxngtLGOiDGPRu+Uc4fhKzbpteZQ=="
     },
+    "otplib@12.0.1": {
+      "integrity": "sha512-xDGvUOQjop7RDgxTQ+o4pOol0/3xSZzawTiPKRrHnQWAy0WjhNs/5HdIDJCrqC4MBynmjXgULc6YfioaxZeFgg==",
+      "dependencies": [
+        "@otplib/core",
+        "@otplib/preset-default",
+        "@otplib/preset-v11"
+      ]
+    },
     "pure-rand@6.1.0": {
       "integrity": "sha512-bVWawvoZoBYpp6yIoQtQXHZjmz35RSVHnUOTefl8Vcjr8snTPY1wnpSPMWekcFwbxI6gtmT7rSYPFvz71ldiOA=="
+    },
+    "thirty-two@1.0.2": {
+      "integrity": "sha512-OEI0IWCe+Dw46019YLl6V10Us5bi574EvlJEOcAkB29IzQ/mYD1A6RyNHLjZPiHCmuodxvgF6U+vZO1L15lxVA=="
     }
   },
   "workspace": {
@@ -71,7 +115,8 @@
       "jsr:@std/encoding@^1.0.6",
       "jsr:@std/path@^1.0.8",
       "npm:effect@^3.12.7",
-      "npm:jose@^5.9.6"
+      "npm:jose@^5.9.6",
+      "npm:otplib@^12.0.1"
     ]
   }
 }

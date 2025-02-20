@@ -1,43 +1,55 @@
 interface KvUser {
   displayName: string;
-  secret: string;
+  totpSecret: string;
 }
+
+interface UserI extends KvUser {
+  email: string;
+}
+
+const id = (email: string) => ['users', email];
 
 export class User {
   #id: Deno.KvKey;
   #displayName: string;
-  #secret: string;
+  #totpSecret: string;
+  #email: string;
 
   public get displayName(): string {
     return this.#displayName;
   }
 
   public get secret(): string {
-    return this.#secret;
+    return this.#totpSecret;
+  }
+
+  public get email(): string {
+    return this.#email;
   }
 
   public get id(): Deno.KvKey {
     return this.#id;
   }
 
-  constructor(displayName: string, secret: string) {
-    this.#id = ['users', crypto.randomUUID()];
+  constructor({ displayName, email, totpSecret }: UserI) {
+    this.#id = id(email);
     this.#displayName = displayName;
-    this.#secret = secret;
+    this.#email = email;
+    this.#totpSecret = totpSecret;
   }
 
-  static async find(id: Deno.KvKey) {
+  static async get(email: string) {
     const kv = await Deno.openKv();
-    const { value: user } = await kv.get<KvUser>(id);
+    const { value: user } = await kv.get<KvUser>(id(email));
     kv.close();
-    return user === null ? null : new User(user.displayName, user.secret);
+    return user && new User({ ...user, email });
   }
 
   async save() {
     const kv = await Deno.openKv();
     await kv.set(this.#id, {
       displayName: this.#displayName,
-      secret: this.#secret
+      totpSecret: this.#totpSecret
     });
     kv.close();
   }

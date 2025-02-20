@@ -1,9 +1,9 @@
-import { auth } from '@/auth/auth.routes.ts';
-import { post } from '@/posts/post.routes.ts';
+import { auth } from './auth/auth.controller.ts';
+import { post } from './posts/post.controller.ts';
 
-import { Hono } from '@hono/hono';
-import { cors } from '@hono/hono/cors';
-import { logger } from '@hono/hono/logger';
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { logger } from 'hono/logger';
 
 export interface Bindings {
   SITE_URL: string;

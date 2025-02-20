@@ -1,4 +1,4 @@
-import { join } from '@std/path';
+import { join } from 'std/path';
 
 export class Kv {
   #path: string[];
