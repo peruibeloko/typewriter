@@ -15,7 +15,7 @@ export class Filesystem {
     return Deno.writeTextFile(join(...this.#path, filename), data);
   }
 
-  public get path(): string[] {
-    return this.#path;
+  public get path(): string {
+    return join(...this.#path);
   }
 }
