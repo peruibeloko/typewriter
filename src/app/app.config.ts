@@ -1,10 +1,12 @@
 import { EnvVars } from '@/app/app.types.ts';
+import { join, normalize } from '@std/path';
 import { DB } from 'sqlite';
-import { format, join, normalize, parse } from 'std/path';
 
 const isError = (x: unknown) => x instanceof Error;
 
-export function parseEnv(env: Record<string, string | undefined>): EnvVars | Error[] {
+export function parseEnv(
+  env: Record<string, string | undefined>,
+): EnvVars | Error[] {
   const dbPath = parseDbPath(env['DB_PATH']);
   const jwtSecret = parseString('JWT_SECRET', env['JWT_SECRET']);
   const verbose = parseBool('VERBOSE', env['VERBOSE']);
@@ -16,7 +18,7 @@ export function parseEnv(env: Record<string, string | undefined>): EnvVars | Err
   return {
     DB_PATH: dbPath as string,
     JWT_SECRET: jwtSecret as string,
-    VERBOSE: verbose as boolean
+    VERBOSE: verbose as boolean,
   };
 }
 
@@ -48,18 +50,24 @@ function parseDbPath(path?: string) {
 
 function dbFileMissing(path: string) {
   console.log('DB_PATH does not point to a file');
-  const shouldCreate = confirm('Would you like to create the database file now?');
+  const shouldCreate = confirm(
+    'Would you like to create the database file now?',
+  );
 
   if (!shouldCreate) return;
 
   const newPath = join(path, 'typewriter.db');
   const db = new DB(newPath);
 
-  const script = Deno.readTextFileSync(normalize(join('src', 'persistence', 'setup.sql')));
+  const script = Deno.readTextFileSync(
+    normalize(join('src', 'persistence', 'setup.sql')),
+  );
   db.execute(script);
   db.close();
 
   console.log(`Database was created in ${newPath}`);
-  console.log('Set the DB_PATH environment variable to this value and run typewriter again');
+  console.log(
+    'Set the DB_PATH environment variable to this value and run typewriter again',
+  );
   Deno.exit(1);
 }

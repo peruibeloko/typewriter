@@ -16,7 +16,7 @@ Deno.serve(
   {
     port: 3000,
     hostname: '0.0.0.0',
-    onListen: ({ port }) => console.log(`Listening on port ${port}`)
+    onListen: ({ port }) => console.log(`Listening on port ${port}`),
   },
-  typewriter({ env, db })
+  typewriter({ env, db }),
 );

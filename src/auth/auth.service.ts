@@ -1,10 +1,10 @@
 import { Allowlist } from '@/auth/allowlist.model.ts';
 import { User } from '@/user/user.model.ts';
 
-import { HTTPException } from 'hono/http-exception';
-import { sign } from 'hono/jwt';
+import { HTTPException } from '@hono/http-exception';
+import { sign } from '@hono/jwt';
+import { encodeBase32 } from '@std/encoding';
 import { totp } from 'otplib';
-import { encodeBase32 } from 'std/encoding';
 
 export async function signup(email: string, displayName: string) {
   if (!email) {
@@ -15,10 +15,12 @@ export async function signup(email: string, displayName: string) {
 
   const registrationState = allowlist.isActive(email);
 
-  if (registrationState === null)
+  if (registrationState === null) {
     return new HTTPException(403, { message: 'User not in allowlist' });
-  if (registrationState === true)
+  }
+  if (registrationState === true) {
     return new HTTPException(409, { message: 'User already registered' });
+  }
 
   allowlist.register(email);
 
@@ -32,23 +34,29 @@ export async function signup(email: string, displayName: string) {
 export async function login(email: string, token: string) {
   const user = await User.get(email);
 
-  if (!user) return new HTTPException(404, { message: `No user for email ${email} was found` });
-  if (!totp.check(token, user.secret)) return new HTTPException(400, { message: 'Invalid OTP' });
+  if (!user) {
+    return new HTTPException(404, {
+      message: `No user for email ${email} was found`,
+    });
+  }
+  if (!totp.check(token, user.secret)) {
+    return new HTTPException(400, { message: 'Invalid OTP' });
+  }
 
   const signKey = await crypto.subtle.importKey(
     'raw',
     new TextEncoder().encode(Deno.env.get('JWT_SECRET') as string),
     { name: 'HMAC', hash: 'SHA-256' },
     false,
-    ['sign']
+    ['sign'],
   );
 
   return sign(
     {
-      exp:
-        Temporal.Now.instant().add(Temporal.Duration.from({ hours: 12 })).epochMilliseconds / 1000,
-      aud: `${user.email}`
+      exp: Temporal.Now.instant().add(Temporal.Duration.from({ hours: 12 }))
+        .epochMilliseconds / 1000,
+      aud: `${user.email}`,
     },
-    signKey
+    signKey,
   );
 }

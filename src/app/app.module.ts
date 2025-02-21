@@ -1,10 +1,10 @@
 import { routes } from '@/app/app.controller.ts';
 import { Config, Typewriter } from '@/app/app.types.ts';
 
-import { Hono } from 'hono';
-import { cors } from 'hono/cors';
-import { logger } from 'hono/logger';
-import { showRoutes } from 'hono/dev';
+import { Hono } from '@hono';
+import { cors } from '@hono/cors';
+import { showRoutes } from '@hono/dev';
+import { logger } from '@hono/logger';
 
 export function typewriter(config: Config) {
   const app = new Hono<Typewriter>();
@@ -15,7 +15,7 @@ export function typewriter(config: Config) {
     app.use(logger());
     showRoutes(routes, {
       colorize: true,
-      verbose: true
+      verbose: true,
     });
   }
 

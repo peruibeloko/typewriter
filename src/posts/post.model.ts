@@ -18,7 +18,12 @@ export class Post {
   #draft: boolean;
   #author: User;
 
-  constructor(basePath: string[], title: string, author: User, content: string = '') {
+  constructor(
+    basePath: string[],
+    title: string,
+    author: User,
+    content: string = '',
+  ) {
     this.#postId = crypto.randomUUID();
     this.#id = ['posts', this.#postId];
     this.#title = title;
@@ -35,8 +40,8 @@ export class Post {
       metadata: {
         author: this.#author.id,
         createdAt: Temporal.Now.plainDateTimeISO(),
-        lastUpdated: Temporal.Now.plainDateTimeISO()
-      }
+        lastUpdated: Temporal.Now.plainDateTimeISO(),
+      },
     });
     return this.filesystem.writeFile(`${this.#postId}.md`, this.#content);
   }

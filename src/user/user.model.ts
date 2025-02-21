@@ -49,7 +49,7 @@ export class User {
     const kv = await Deno.openKv();
     await kv.set(this.#id, {
       displayName: this.#displayName,
-      totpSecret: this.#totpSecret
+      totpSecret: this.#totpSecret,
     });
     kv.close();
   }

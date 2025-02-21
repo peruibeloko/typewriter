@@ -1,5 +1,6 @@
-import { Typewriter } from "@/app/app.types.ts";
-import { createMiddleware } from 'hono/factory';
+import { Typewriter } from '@/app/app.types.ts';
+
+import { createMiddleware } from '@hono/factory';
 
 export const parsePagination = createMiddleware<Typewriter>(async (c, next) => {
   const page = Number(c.req.query('page'));
