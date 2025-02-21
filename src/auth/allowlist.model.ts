@@ -1,16 +1,28 @@
-const id = (email: string): Deno.KvKey => ['allowlist', email];
+import { DB } from 'sqlite';
+import { EntryAllowlist } from '@/auth/auth.types.ts';
 
 export class Allowlist {
-  static async get(email: string) {
-    const kv = await Deno.openKv();
-    const result = await kv.get<boolean>(id(email));
-    kv.close();
-    return result.value;
+  #db: DB;
+
+  constructor(db: DB) {
+    this.#db = db;
   }
 
-  static async register(email: string) {
-    const kv = await Deno.openKv();
-    kv.set(id(email), true);
-    kv.close();
+  isActive(email: string) {
+    const [{ isActive }] = this.#db.queryEntries<Pick<EntryAllowlist, 'isActive'>>(
+      'SELECT isActive FROM allowlist WHERE email = :email',
+      {
+        email
+      }
+    );
+    this.#db.close();
+
+    return isActive;
+  }
+
+  register(email: string) {
+    this.#db.query('INSERT INTO allowlist (email) VALUES (:email)', {
+      email
+    });
   }
 }

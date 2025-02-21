@@ -1,6 +1,5 @@
 import { Allowlist } from '@/auth/allowlist.model.ts';
 import { User } from '@/user/user.model.ts';
-import { encode } from '@/utils.ts';
 
 import { HTTPException } from 'hono/http-exception';
 import { sign } from 'hono/jwt';
@@ -12,14 +11,16 @@ export async function signup(email: string, displayName: string) {
     return new HTTPException(400, { message: 'Missing user email' });
   }
 
-  const registrationState = await Allowlist.get(email);
+  const allowlist = new Allowlist();
+
+  const registrationState = allowlist.isActive(email);
 
   if (registrationState === null)
     return new HTTPException(403, { message: 'User not in allowlist' });
   if (registrationState === true)
     return new HTTPException(409, { message: 'User already registered' });
 
-  await Allowlist.register(email);
+  allowlist.register(email);
 
   const totpSecret = encodeBase32(crypto.getRandomValues(new Uint8Array(20)));
 
@@ -36,7 +37,7 @@ export async function login(email: string, token: string) {
 
   const signKey = await crypto.subtle.importKey(
     'raw',
-    encode(Deno.env.get('JWT_SECRET') as string),
+    new TextEncoder().encode(Deno.env.get('JWT_SECRET') as string),
     { name: 'HMAC', hash: 'SHA-256' },
     false,
     ['sign']

@@ -1,35 +1,20 @@
-import * as post from '@/posts/post.service.ts';
+import { Typewriter } from '@/app/app.types.ts';
+import { parsePagination } from '@/posts/post.middleware.ts';
+import * as PostService from '@/posts/post.service.ts';
 import { Hono } from 'hono';
-import { checkAuth } from "@/middleware.ts";
+import { checkAuth } from '@/auth/auth.middleware.ts';
 
-
-const post = new Hono();
-
-post.get('/', c => {
-  const page = Number(c.req.query('page'));
-  const size = Number(c.req.query('size'));
-  const hasValidBounds = ![isNaN(page), isNaN(size)].includes(true);
-
-  if (!hasValidBounds) {
-    c.status(400);
-    c.text('Invalid bounds');
-  }
-
-  return c.json(post.getPaginatedPosts(page, size));
-});
-post.post('/', checkAuth, c => post.createPost);
-
-post.get('/count', post.countPosts);
-post.get('/latest', post.getLatestPostId);
-post.get('/first', post.getFirstPostId);
-post.get('/random', post.getRandomPostId);
+const post = new Hono<Typewriter>();
 
 post
-  .get('/:id', post.getPostById)
-  .patch('/:id', checkAuth, post.updatePost)
-  .delete('/:id', checkAuth, post.deletePost);
+  .basePath('/')
+  .get(parsePagination, c => c.json(PostService.getPaginatedPosts(c.get('page'), c.get('size'))))
+  .post(checkAuth, c => c.json(PostService.createPost));
 
-post.get('/:id/next', post.getNextPostId);
-post.get('/:id/prev', post.getPreviousPostId);
+post
+  .basePath('/:id')
+  .get(PostService.getPostById)
+  .patch(checkAuth, PostService.updatePost)
+  .delete(checkAuth, PostService.deletePost);
 
 export { post };

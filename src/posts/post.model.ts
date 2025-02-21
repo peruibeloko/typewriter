@@ -1,5 +1,4 @@
 import { User } from '@/user/user.model.ts';
-import { Persistence } from '@/persistence/persistence.ts';
 
 interface KvPost {
   title: string;
@@ -11,7 +10,7 @@ interface KvPost {
   };
 }
 
-export class Post extends Persistence {
+export class Post {
   #postId: string;
   #id: Deno.KvKey;
   #title: string;
@@ -20,7 +19,6 @@ export class Post extends Persistence {
   #author: User;
 
   constructor(basePath: string[], title: string, author: User, content: string = '') {
-    super(basePath, 'posts');
     this.#postId = crypto.randomUUID();
     this.#id = ['posts', this.#postId];
     this.#title = title;

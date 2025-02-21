@@ -1,6 +1,7 @@
 {
   "imports": {
     "@/": "./src/",
+    "@std/fs": "jsr:@std/fs@^1.0.13",
     "cross/jwt": "jsr:@cross/jwt@^0.5.0",
     "hectorm/otpauth": "jsr:@hectorm/otpauth@^9.3.6",
     "hono": "jsr:@hono/hono@^4.6.19",
@@ -8,6 +9,8 @@
     "std/encoding": "jsr:@std/encoding@^1.0.6",
     "std/path": "jsr:@std/path@^1.0.8",
     "effect": "npm:effect@^3.12.7",
-    "jose": "npm:jose@^5.9.6"
+    "jose": "npm:jose@^5.9.6",
+    "zod": "npm:zod@^3.24.2",
+    "sqlite": "https://deno.land/x/sqlite@v3.9.1/mod.ts"
   }
 }
