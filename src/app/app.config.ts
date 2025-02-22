@@ -2,7 +2,18 @@ import { EnvVars } from '@/app/app.types.ts';
 import { join, normalize } from '@std/path';
 import { DB } from 'sqlite';
 
-const isError = (x: unknown) => x instanceof Error;
+const env = parseEnv(Deno.env.toObject());
+
+if (env instanceof Array) {
+  console.error('Typewriter failed to read some environment variables');
+  console.error(env.reduce((msg, err) => `${msg}- ${err.message}\n`, ''));
+  Deno.exit(1);
+}
+
+const validEnv = env as EnvVars;
+export { validEnv as env };
+export const db = new DB(env.DB_PATH);
+
 
 export function parseEnv(
   env: Record<string, string | undefined>,
@@ -10,7 +21,8 @@ export function parseEnv(
   const dbPath = parseDbPath(env['DB_PATH']);
   const jwtSecret = parseString('JWT_SECRET', env['JWT_SECRET']);
   const verbose = parseBool('VERBOSE', env['VERBOSE']);
-
+  
+  const isError = (x: unknown) => x instanceof Error;
   const errors = [dbPath, jwtSecret, verbose].filter(isError);
 
   if (errors.length > 0) return errors;

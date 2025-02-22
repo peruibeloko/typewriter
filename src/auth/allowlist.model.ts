@@ -18,7 +18,6 @@ export class Allowlist {
         email,
       },
     );
-    this.#db.close();
 
     return isActive;
   }

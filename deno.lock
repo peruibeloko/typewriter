@@ -1,13 +1,8 @@
 {
   "version": "4",
   "specifiers": {
-    "jsr:@cross/deepmerge@1": "1.0.0",
-    "jsr:@cross/fs@~0.1.11": "0.1.11",
-    "jsr:@cross/jwt@0.5": "0.5.0",
-    "jsr:@hectorm/otpauth@^9.3.6": "9.3.6",
     "jsr:@hono/hono@^4.6.19": "4.6.19",
     "jsr:@std/encoding@^1.0.6": "1.0.6",
-    "jsr:@std/encoding@~0.224.2": "0.224.3",
     "jsr:@std/fs@^1.0.13": "1.0.13",
     "jsr:@std/path@^1.0.8": "1.0.8",
     "npm:effect@^3.12.7": "3.12.7",
@@ -16,28 +11,8 @@
     "npm:zod@^3.24.2": "3.24.2"
   },
   "jsr": {
-    "@cross/deepmerge@1.0.0": {
-      "integrity": "1e1318a74e31ba1959b9aa0acae8bd417b806f74ffd25ac07c90e12f83ad6b1d"
-    },
-    "@cross/fs@0.1.11": {
-      "integrity": "88fdde19a5c0b5517ccd1bf087a2cdae8f4e9acbd54b9688f5332af574b49f7d"
-    },
-    "@cross/jwt@0.5.0": {
-      "integrity": "910791587e94599cea3476ddf9e232da5569cb388619f27dd864e154af31f2b0",
-      "dependencies": [
-        "jsr:@cross/deepmerge",
-        "jsr:@cross/fs",
-        "jsr:@std/encoding@~0.224.2"
-      ]
-    },
-    "@hectorm/otpauth@9.3.6": {
-      "integrity": "a1b88bdee6a7b4e208954d58b8c69561711f2e43b2f7ff4e07202e4a4c06219c"
-    },
     "@hono/hono@4.6.19": {
       "integrity": "5ba1bd0ef74449c0a647f029e29896776c30fb64aefbcef8724af4ce4846791b"
-    },
-    "@std/encoding@0.224.3": {
-      "integrity": "5e861b6d81be5359fad4155e591acf17c0207b595112d1840998bb9f476dbdaf"
     },
     "@std/encoding@1.0.6": {
       "integrity": "ca87122c196e8831737d9547acf001766618e78cd8c33920776c7f5885546069"
@@ -134,8 +109,6 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@cross/jwt@0.5",
-      "jsr:@hectorm/otpauth@^9.3.6",
       "jsr:@hono/hono@^4.6.19",
       "jsr:@std/encoding@^1.0.6",
       "jsr:@std/fs@^1.0.13",

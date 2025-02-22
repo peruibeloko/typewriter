@@ -1,17 +1,25 @@
 import { routes } from '@/app/app.controller.ts';
-import { Config, Typewriter } from '@/app/app.types.ts';
+import { Typewriter } from '@/app/app.types.ts';
+import { db, env } from '@/app/app.config.ts';
 
 import { Hono } from '@hono';
 import { cors } from '@hono/cors';
 import { showRoutes } from '@hono/dev';
 import { logger } from '@hono/logger';
 
-export function typewriter(config: Config) {
+export function typewriter() {
+  return {
+    server: setupHono(),
+    shutdown: setupShutdown(),
+  };
+}
+
+function setupHono() {
   const app = new Hono<Typewriter>();
 
   app.use(cors({ origin: '*' }));
 
-  if (config.env.VERBOSE) {
+  if (env.VERBOSE) {
     app.use(logger());
     showRoutes(routes, {
       colorize: true,
@@ -19,12 +27,26 @@ export function typewriter(config: Config) {
     });
   }
 
-  app.use(async (c, next) => {
-    c.set('env', config.env);
-    await next();
-  });
-
   app.route('/', routes);
 
   return app.fetch;
+}
+
+function setupShutdown() {
+  const shutdown = new AbortController();
+
+  const routine = () => {
+    console.log('Received SIGTERM, aborting current requests');
+    shutdown.abort();
+    console.log('Done ✅');
+    console.log('Closing DB connection');
+    db.close();
+    console.log('Done ✅');
+    console.log('Thank you for using typewriter! :)');
+  };
+
+  return {
+    signal: shutdown.signal,
+    function: routine,
+  };
 }
