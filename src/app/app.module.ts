@@ -4,7 +4,6 @@ import { db, env } from '@/app/app.config.ts';
 
 import { Hono } from '@hono';
 import { cors } from '@hono/cors';
-import { showRoutes } from '@hono/dev';
 import { logger } from '@hono/logger';
 
 export function typewriter() {
@@ -21,10 +20,6 @@ function setupHono() {
 
   if (env.VERBOSE) {
     app.use(logger());
-    showRoutes(routes, {
-      colorize: true,
-      verbose: true,
-    });
   }
 
   app.route('/', routes);
@@ -42,7 +37,6 @@ function setupShutdown() {
     console.log('Closing DB connection');
     db.close();
     console.log('Done ✅');
-    console.log('Thank you for using typewriter! :)');
   };
 
   return {

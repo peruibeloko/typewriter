@@ -3,6 +3,7 @@ import { auth } from '@/auth/auth.controller.ts';
 import { post } from '@/posts/post.controller.ts';
 
 import { Hono } from '@hono';
+import { inspectRoutes } from '@hono/dev';
 
 const routes = new Hono<Typewriter>();
 
@@ -15,6 +16,7 @@ routes.get('/info', (c) => {
         `${dir.name}${dir.isDirectory ? '/' : ''}`
       ),
     ],
+    routes: inspectRoutes(routes)
   };
 
   return c.json(info);

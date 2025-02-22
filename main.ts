@@ -12,4 +12,4 @@ Deno.serve(
     onListen: ({ port }) => console.log(`Listening on port ${port}`),
   },
   server,
-);
+).finished.then(() => console.log('Thank you for using typewriter!'));
