@@ -11,3 +11,5 @@ node_modules/
 
 *.db
 typewriter.toml
+overview.png
+overview.tldr
