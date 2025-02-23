@@ -75,12 +75,6 @@ async function getConfiguration() {
 }
 
 const env = await getConfiguration();
-export { env };
+const db = SQLite.instance(env.DB_PATH);
 
-// ?     *--------------------------*
-// ?    /                          /
-// ?   /      Database Setup      /
-// ?  /                          /
-// ? *--------------------------*
-
-export const db = SQLite.instance(env.DB_PATH);
+export { env, db };
