@@ -16,7 +16,7 @@ routes.get('/info', (c) => {
         `${dir.name}${dir.isDirectory ? '/' : ''}`
       ),
     ],
-    routes: inspectRoutes(routes)
+    routes: inspectRoutes(routes),
   };
 
   return c.json(info);

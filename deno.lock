@@ -2,9 +2,11 @@
   "version": "4",
   "specifiers": {
     "jsr:@hono/hono@^4.6.19": "4.6.19",
+    "jsr:@std/collections@^1.0.9": "1.0.10",
     "jsr:@std/encoding@^1.0.6": "1.0.6",
     "jsr:@std/fs@^1.0.13": "1.0.13",
     "jsr:@std/path@^1.0.8": "1.0.8",
+    "jsr:@std/toml@^1.0.2": "1.0.2",
     "npm:effect@^3.12.7": "3.12.7",
     "npm:jose@^5.9.6": "5.9.6",
     "npm:otplib@^12.0.1": "12.0.1",
@@ -13,6 +15,9 @@
   "jsr": {
     "@hono/hono@4.6.19": {
       "integrity": "5ba1bd0ef74449c0a647f029e29896776c30fb64aefbcef8724af4ce4846791b"
+    },
+    "@std/collections@1.0.10": {
+      "integrity": "903af106a3d92970d74e20f7ebff77d9658af9bef4403f1dc42a7801c0575899"
     },
     "@std/encoding@1.0.6": {
       "integrity": "ca87122c196e8831737d9547acf001766618e78cd8c33920776c7f5885546069"
@@ -25,6 +30,12 @@
     },
     "@std/path@1.0.8": {
       "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
+    },
+    "@std/toml@1.0.2": {
+      "integrity": "5892ba489c5b512265a384238a8fe8dddbbb9498b4b210ef1b9f0336a423a39b",
+      "dependencies": [
+        "jsr:@std/collections"
+      ]
     }
   },
   "npm": {
@@ -113,6 +124,7 @@
       "jsr:@std/encoding@^1.0.6",
       "jsr:@std/fs@^1.0.13",
       "jsr:@std/path@^1.0.8",
+      "jsr:@std/toml@^1.0.2",
       "npm:effect@^3.12.7",
       "npm:jose@^5.9.6",
       "npm:otplib@^12.0.1",

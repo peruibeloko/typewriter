@@ -1,85 +1,86 @@
-import { EnvVars } from '@/app/app.types.ts';
-import { join, normalize } from '@std/path';
-import { DB } from 'sqlite';
+import { EnvParse, EnvVars } from '@/app/app.types.ts';
+import { SQLite } from '@/persistence/sqlite.ts';
+import {
+  formatErrors,
+  getErrors,
+  hasErrors,
+  isError,
+} from '@/app/config/config.errors.ts';
+import * as Env from '@/app/config/env.repository.ts';
+import * as ConfigFile from '@/app/config/file.repository.ts';
+import { missingConfigs } from '@/app/config/config.utils.ts';
 
-const env = parseEnv(Deno.env.toObject());
+const definedOnly = (obj: EnvParse) =>
+  Object.entries(obj)
+    .filter(([_, v]) => !isError(v))
+    .reduce(
+      (acc, [k, v]) => ({
+        ...acc,
+        [k as keyof EnvVars]: v as string | boolean,
+      }),
+      {} as Partial<EnvVars>,
+    );
 
-if (env instanceof Array) {
-  console.error('Typewriter failed to read some environment variables');
-  console.error(env.reduce((msg, err) => `${msg}- ${err.message}\n`, ''));
-  Deno.exit(1);
-}
+async function getConfiguration() {
+  console.log('Attempting to read configuration from environment...');
+  const fromEnv = Env.getConfig();
 
-const validEnv = env as EnvVars;
-export { validEnv as env };
-export const db = new DB(env.DB_PATH);
-
-
-export function parseEnv(
-  env: Record<string, string | undefined>,
-): EnvVars | Error[] {
-  const dbPath = parseDbPath(env['DB_PATH']);
-  const jwtSecret = parseString('JWT_SECRET', env['JWT_SECRET']);
-  const verbose = parseBool('VERBOSE', env['VERBOSE']);
-  
-  const isError = (x: unknown) => x instanceof Error;
-  const errors = [dbPath, jwtSecret, verbose].filter(isError);
-
-  if (errors.length > 0) return errors;
-
-  return {
-    DB_PATH: dbPath as string,
-    JWT_SECRET: jwtSecret as string,
-    VERBOSE: verbose as boolean,
-  };
-}
-
-function parseString(name: string, str?: string) {
-  if (!str) return new Error(`${name} variable is not set`);
-  return str;
-}
-
-function parseBool(name: string, str?: string) {
-  const concreteVal = parseString(name, str);
-
-  if (concreteVal instanceof Error) return concreteVal;
-  return concreteVal.toLowerCase().trim() === 'true' ? true : false;
-}
-
-function parseDbPath(path?: string) {
-  const concretePath = parseString('DB_PATH', path);
-
-  if (concretePath instanceof Error) return concretePath;
-
-  try {
-    Deno.readFileSync(concretePath);
-  } catch {
-    dbFileMissing(concretePath);
+  if (
+    !hasErrors(fromEnv) &&
+    missingConfigs(fromEnv as Partial<EnvVars>).size === 0
+  ) {
+    console.log('Success!');
+    return {
+      VERBOSE: false, // ? Set defaults
+      ...definedOnly(fromEnv), // ? Override using env
+    } as EnvVars;
   }
 
-  return concretePath;
+  console.error('Typewriter failed to read some environment variables');
+  console.error(formatErrors(getErrors(fromEnv)));
+
+  console.log('Attempting to read remaining values from typewriter.toml...');
+  const fromFile = await ConfigFile.getConfig();
+
+  if (fromFile instanceof Error) {
+    console.error(fromFile.message);
+    Deno.exit(1);
+  }
+
+  if (
+    !hasErrors(fromFile) &&
+    missingConfigs(fromFile as Partial<EnvVars>).size === 0
+  ) {
+    console.log('Success!');
+    return {
+      VERBOSE: false, // ? Set defaults
+      ...definedOnly(fromFile), // ? Override from config file
+      ...definedOnly(fromEnv), // ? Override using env
+    } as EnvVars;
+  }
+
+  if (hasErrors(fromFile)) {
+    console.error('Typewriter failed to read some environment variables');
+    console.error(formatErrors(getErrors(fromFile)));
+    Deno.exit(1);
+  }
+
+  const finalConfig = {
+    VERBOSE: false, // ? Set defaults
+    ...definedOnly(fromFile), // ? Override from config file
+    ...definedOnly(fromEnv), // ? Override using env
+  } as EnvVars;
+
+  return finalConfig;
 }
 
-function dbFileMissing(path: string) {
-  console.log('DB_PATH does not point to a file');
-  const shouldCreate = confirm(
-    'Would you like to create the database file now?',
-  );
+const env = await getConfiguration();
+export { env };
 
-  if (!shouldCreate) return;
+// ?     *--------------------------*
+// ?    /                          /
+// ?   /      Database Setup      /
+// ?  /                          /
+// ? *--------------------------*
 
-  const newPath = join(path, 'typewriter.db');
-  const db = new DB(newPath);
-
-  const script = Deno.readTextFileSync(
-    normalize(join('src', 'persistence', 'setup.sql')),
-  );
-  db.execute(script);
-  db.close();
-
-  console.log(`Database was created in ${newPath}`);
-  console.log(
-    'Set the DB_PATH environment variable to this value and run typewriter again',
-  );
-  Deno.exit(1);
-}
+export const db = SQLite.instance(env.DB_PATH);

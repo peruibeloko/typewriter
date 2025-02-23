@@ -6,6 +6,7 @@
     "@std/encoding": "jsr:@std/encoding@^1.0.6",
     "@std/fs": "jsr:@std/fs@^1.0.13",
     "@std/path": "jsr:@std/path@^1.0.8",
+    "@std/toml": "jsr:@std/toml@^1.0.2",
 
     "sqlite": "https://deno.land/x/sqlite@v3.9.1/mod.ts",
 
