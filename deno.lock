@@ -1,31 +1,116 @@
 {
   "version": "4",
   "specifiers": {
-    "jsr:@hono/hono@^4.6.19": "4.6.19",
+    "jsr:@db/sqlite@0.12": "0.12.0",
+    "jsr:@denosaurs/plug@1": "1.0.6",
+    "jsr:@dldc/erreur@^7.1.1": "7.1.1",
+    "jsr:@dldc/sqlite@3": "3.1.0",
+    "jsr:@dldc/sqlite@^3.1.0": "3.1.0",
+    "jsr:@dldc/zendb-db-sqlite@2": "2.0.0",
+    "jsr:@dldc/zendb@10": "10.0.0",
+    "jsr:@dldc/zendb@9": "9.0.1",
+    "jsr:@std/assert@0.217": "0.217.0",
+    "jsr:@std/assert@0.221": "0.221.0",
     "jsr:@std/collections@^1.0.9": "1.0.10",
-    "jsr:@std/encoding@^1.0.6": "1.0.6",
+    "jsr:@std/encoding@0.221": "0.221.0",
+    "jsr:@std/encoding@^1.0.7": "1.0.7",
+    "jsr:@std/fmt@0.221": "0.221.0",
+    "jsr:@std/fs@0.221": "0.221.0",
     "jsr:@std/fs@^1.0.13": "1.0.13",
+    "jsr:@std/path@0.217": "0.217.0",
+    "jsr:@std/path@0.221": "0.221.0",
     "jsr:@std/path@^1.0.8": "1.0.8",
     "jsr:@std/toml@^1.0.2": "1.0.2",
-    "npm:effect@^3.12.7": "3.12.7",
-    "npm:jose@^5.9.6": "5.9.6",
+    "npm:@hono/valibot-validator@~0.5.2": "0.5.2_hono@4.7.2_valibot@1.0.0-rc.2",
+    "npm:hono@^4.7.2": "4.7.2",
     "npm:otplib@^12.0.1": "12.0.1",
-    "npm:zod@^3.24.2": "3.24.2"
+    "npm:valibot@^1.0.0-rc.2": "1.0.0-rc.2"
   },
   "jsr": {
-    "@hono/hono@4.6.19": {
-      "integrity": "5ba1bd0ef74449c0a647f029e29896776c30fb64aefbcef8724af4ce4846791b"
+    "@db/sqlite@0.12.0": {
+      "integrity": "dd1ef7f621ad50fc1e073a1c3609c4470bd51edc0994139c5bf9851de7a6d85f",
+      "dependencies": [
+        "jsr:@denosaurs/plug",
+        "jsr:@std/path@0.217"
+      ]
+    },
+    "@denosaurs/plug@1.0.6": {
+      "integrity": "6cf5b9daba7799837b9ffbe89f3450510f588fafef8115ddab1ff0be9cb7c1a7",
+      "dependencies": [
+        "jsr:@std/encoding@0.221",
+        "jsr:@std/fmt",
+        "jsr:@std/fs@0.221",
+        "jsr:@std/path@0.221"
+      ]
+    },
+    "@dldc/erreur@7.1.1": {
+      "integrity": "9ba954ae0654e4ed003959c77aaa009fdf6c64f60bf4cfec33b134556ab0d6da"
+    },
+    "@dldc/sqlite@3.1.0": {
+      "integrity": "f4413ec8ef25ba95bb80769246c2c2e9512346508830e586fc86723c093ec85e"
+    },
+    "@dldc/zendb@9.0.1": {
+      "integrity": "2b3142d93eca5fcedc3e37910c7ab1fd6693dbbcd0f5e896b6c57411d4916f5d",
+      "dependencies": [
+        "jsr:@dldc/erreur",
+        "jsr:@dldc/sqlite@3"
+      ]
+    },
+    "@dldc/zendb@10.0.0": {
+      "integrity": "7202468b0a7b003f81c45589b36691018e9eb47f5b46416998b0639b861b88fc",
+      "dependencies": [
+        "jsr:@dldc/erreur",
+        "jsr:@dldc/sqlite@^3.1.0"
+      ]
+    },
+    "@dldc/zendb-db-sqlite@2.0.0": {
+      "integrity": "356bd0c6f3e9fb17dfc8c37ace58f75a229486df973ff5434be4d943a7a8e70c",
+      "dependencies": [
+        "jsr:@db/sqlite",
+        "jsr:@dldc/zendb@9"
+      ]
+    },
+    "@std/assert@0.217.0": {
+      "integrity": "c98e279362ca6982d5285c3b89517b757c1e3477ee9f14eb2fdf80a45aaa9642"
+    },
+    "@std/assert@0.221.0": {
+      "integrity": "a5f1aa6e7909dbea271754fd4ab3f4e687aeff4873b4cef9a320af813adb489a"
     },
     "@std/collections@1.0.10": {
       "integrity": "903af106a3d92970d74e20f7ebff77d9658af9bef4403f1dc42a7801c0575899"
     },
-    "@std/encoding@1.0.6": {
-      "integrity": "ca87122c196e8831737d9547acf001766618e78cd8c33920776c7f5885546069"
+    "@std/encoding@0.221.0": {
+      "integrity": "d1dd76ef0dc5d14088411e6dc1dede53bf8308c95d1537df1214c97137208e45"
+    },
+    "@std/encoding@1.0.7": {
+      "integrity": "f631247c1698fef289f2de9e2a33d571e46133b38d042905e3eac3715030a82d"
+    },
+    "@std/fmt@0.221.0": {
+      "integrity": "379fed69bdd9731110f26b9085aeb740606b20428ce6af31ef6bd45ef8efa62a"
+    },
+    "@std/fs@0.221.0": {
+      "integrity": "028044450299de8ed5a716ade4e6d524399f035513b85913794f4e81f07da286",
+      "dependencies": [
+        "jsr:@std/assert@0.221",
+        "jsr:@std/path@0.221"
+      ]
     },
     "@std/fs@1.0.13": {
       "integrity": "756d3ff0ade91c9e72b228e8012b6ff00c3d4a4ac9c642c4dac083536bf6c605",
       "dependencies": [
-        "jsr:@std/path"
+        "jsr:@std/path@^1.0.8"
+      ]
+    },
+    "@std/path@0.217.0": {
+      "integrity": "1217cc25534bca9a2f672d7fe7c6f356e4027df400c0e85c0ef3e4343bc67d11",
+      "dependencies": [
+        "jsr:@std/assert@0.217"
+      ]
+    },
+    "@std/path@0.221.0": {
+      "integrity": "0a36f6b17314ef653a3a1649740cc8db51b25a133ecfe838f20b79a56ebe0095",
+      "dependencies": [
+        "jsr:@std/assert@0.221"
       ]
     },
     "@std/path@1.0.8": {
@@ -39,6 +124,13 @@
     }
   },
   "npm": {
+    "@hono/valibot-validator@0.5.2_hono@4.7.2_valibot@1.0.0-rc.2": {
+      "integrity": "sha512-WbTr8PCFNAME0ale62rmmq+E8bGp5a7VPiVNmNT+Ue12GJE3Ax+CWBGtHhR0TzAEiloPvJND3IbjHIgtNtsqhw==",
+      "dependencies": [
+        "hono",
+        "valibot"
+      ]
+    },
     "@otplib/core@12.0.1": {
       "integrity": "sha512-4sGntwbA/AC+SbPhbsziRiD+jNDdIzsZ3JUyfZwjtKyc/wufl1pnSIaG4Uqx8ymPagujub0o92kgBnB89cuAMA=="
     },
@@ -71,20 +163,8 @@
         "@otplib/plugin-thirty-two"
       ]
     },
-    "effect@3.12.7": {
-      "integrity": "sha512-BsDTgSjLbL12g0+vGn5xkOgOVhRSaR3VeHmjcUb0gLvpXACJ9OgmlfeH+/FaAZwM5+omIF3I/j1gC5KJrbK1Aw==",
-      "dependencies": [
-        "fast-check"
-      ]
-    },
-    "fast-check@3.23.2": {
-      "integrity": "sha512-h5+1OzzfCC3Ef7VbtKdcv7zsstUQwUDlYpUTvjeUsJAssPgLn7QzbboPtL5ro04Mq0rPOsMzl7q5hIbRs2wD1A==",
-      "dependencies": [
-        "pure-rand"
-      ]
-    },
-    "jose@5.9.6": {
-      "integrity": "sha512-AMlnetc9+CV9asI19zHmrgS/WYsWUwCn2R7RzlbJWD7F9eWYUTGyBmU9o6PxngtLGOiDGPRu+Uc4fhKzbpteZQ=="
+    "hono@4.7.2": {
+      "integrity": "sha512-8V5XxoOF6SI12jkHkzX/6aLBMU5GEF5g387EjVSQipS0DlxWgWGSMeEayY3CRBjtTUQYwLHx9JYouWqKzy2Vng=="
     },
     "otplib@12.0.1": {
       "integrity": "sha512-xDGvUOQjop7RDgxTQ+o4pOol0/3xSZzawTiPKRrHnQWAy0WjhNs/5HdIDJCrqC4MBynmjXgULc6YfioaxZeFgg==",
@@ -94,41 +174,26 @@
         "@otplib/preset-v11"
       ]
     },
-    "pure-rand@6.1.0": {
-      "integrity": "sha512-bVWawvoZoBYpp6yIoQtQXHZjmz35RSVHnUOTefl8Vcjr8snTPY1wnpSPMWekcFwbxI6gtmT7rSYPFvz71ldiOA=="
-    },
     "thirty-two@1.0.2": {
       "integrity": "sha512-OEI0IWCe+Dw46019YLl6V10Us5bi574EvlJEOcAkB29IzQ/mYD1A6RyNHLjZPiHCmuodxvgF6U+vZO1L15lxVA=="
     },
-    "zod@3.24.2": {
-      "integrity": "sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ=="
+    "valibot@1.0.0-rc.2": {
+      "integrity": "sha512-Tnnp7dydpihvoUbJiaxuYfsCAgAFKuFMex7PTaI25XSjRWkU70DmJPlAO1W6sF1/WUx4RNWyM2hdmBSMIUSZFA=="
     }
-  },
-  "redirects": {
-    "https://deno.land/x/sqlite/mod.ts": "https://deno.land/x/sqlite@v3.9.1/mod.ts"
-  },
-  "remote": {
-    "https://deno.land/x/sqlite@v3.9.1/build/sqlite.js": "2afc7875c7b9c85d89730c4a311ab3a304e5d1bf761fbadd8c07bbdf130f5f9b",
-    "https://deno.land/x/sqlite@v3.9.1/build/vfs.js": "7f7778a9fe499cd10738d6e43867340b50b67d3e39142b0065acd51a84cd2e03",
-    "https://deno.land/x/sqlite@v3.9.1/mod.ts": "e09fc79d8065fe222578114b109b1fd60077bff1bb75448532077f784f4d6a83",
-    "https://deno.land/x/sqlite@v3.9.1/src/constants.ts": "90f3be047ec0a89bcb5d6fc30db121685fc82cb00b1c476124ff47a4b0472aa9",
-    "https://deno.land/x/sqlite@v3.9.1/src/db.ts": "03d0c860957496eadedd86e51a6e650670764630e64f56df0092e86c90752401",
-    "https://deno.land/x/sqlite@v3.9.1/src/error.ts": "f7a15cb00d7c3797da1aefee3cf86d23e0ae92e73f0ba3165496c3816ab9503a",
-    "https://deno.land/x/sqlite@v3.9.1/src/function.ts": "bc778cab7a6d771f690afa27264c524d22fcb96f1bb61959ade7922c15a4ab8d",
-    "https://deno.land/x/sqlite@v3.9.1/src/query.ts": "d58abda928f6582d77bad685ecf551b1be8a15e8e38403e293ec38522e030cad",
-    "https://deno.land/x/sqlite@v3.9.1/src/wasm.ts": "e79d0baa6e42423257fb3c7cc98091c54399254867e0f34a09b5bdef37bd9487"
   },
   "workspace": {
     "dependencies": [
-      "jsr:@hono/hono@^4.6.19",
-      "jsr:@std/encoding@^1.0.6",
+      "jsr:@db/sqlite@0.12",
+      "jsr:@dldc/zendb-db-sqlite@2",
+      "jsr:@dldc/zendb@10",
+      "jsr:@std/encoding@^1.0.7",
       "jsr:@std/fs@^1.0.13",
       "jsr:@std/path@^1.0.8",
       "jsr:@std/toml@^1.0.2",
-      "npm:effect@^3.12.7",
-      "npm:jose@^5.9.6",
+      "npm:@hono/valibot-validator@~0.5.2",
+      "npm:hono@^4.7.2",
       "npm:otplib@^12.0.1",
-      "npm:zod@^3.24.2"
+      "npm:valibot@^1.0.0-rc.2"
     ]
   }
 }

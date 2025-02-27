@@ -6,8 +6,23 @@ export class MissingConfigError extends Error {
   }
 }
 
-export const formatErrors = (errArr: Error[]) =>
-  errArr.reduce((msg, err) => `${msg}- ${err.message}\n`, '');
+export class ConfigParseError<T> extends Error {
+  override name = 'ConfigParseError';
+  issues: T;
+
+  constructor(message: string, issues: T) {
+    super(message);
+    this.issues = issues;
+  }
+}
+
+export function formatErrors(err: Error) {
+  if (err instanceof ConfigParseError) {
+    return err.issues; // TODO
+  } else {
+    err.message;
+  }
+}
 
 export const isError = (x: unknown) => x instanceof Error;
 

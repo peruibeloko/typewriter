@@ -1,6 +1,5 @@
 import { routes } from '@/app/app.controller.ts';
-import { Typewriter } from '@/app/app.types.ts';
-import { db, env } from '@/app/app.config.ts';
+import { db, env } from '@/config/config.service.ts';
 
 import { Hono } from '@hono';
 import { cors } from '@hono/cors';
@@ -14,7 +13,7 @@ export function typewriter() {
 }
 
 function setupHono() {
-  const app = new Hono<Typewriter>();
+  const app = new Hono();
 
   app.use(cors({ origin: '*' }));
 
@@ -35,7 +34,7 @@ function setupShutdown() {
     shutdown.abort();
     console.log('Done ✅');
     console.log('Closing DB connection');
-    db.close();
+    db.sqlDb.close();
     console.log('Done ✅');
   };
 

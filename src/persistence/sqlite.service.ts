@@ -1,38 +1,29 @@
-import { join, normalize } from '@std/path';
-import { DB } from 'sqlite';
+import { join } from '@std/path';
+
+import { parseString } from "@/config/config.utils.ts";
+import { SQLite } from '@/persistence/sqlite.model.ts';
+
+// TODO add these back
 
 function dbFileMissing(path: string) {
-  console.log('DB_PATH does not point to a file');
-  const shouldCreate = confirm(
-    'Would you like to create the database file now?',
-  );
+  console.log('Provided DB path does not point to a file');
+  const shouldCreate = confirm('Would you like to create a database file now?');
 
   if (!shouldCreate) return new Error('Database file missing');
 
   const newPath = join(path, 'typewriter.db');
-  const db = new DB(newPath);
-
-  const script = Deno.readTextFileSync(
-    normalize(join('src', 'persistence', 'setup.sql')),
-  );
-  db.execute(script);
-  db.close();
+  const db = SQLite.instance(newPath);
+  db.sqlDb.close();
 
   console.log(`Database was created in ${newPath}`);
   console.log(
-    'Set the DB_PATH environment variable to this value and run typewriter again',
+    'Update your configuration to use this value and run typewriter again',
   );
   Deno.exit(1);
 }
 
 export function validateDbPath(name: string, path?: string) {
-  const validateString = (str?: string) => {
-    if (str === void 0 || str.trim() === '')
-      return new Error(`${name} variable is not set`);
-    return str;
-  };
-
-  const parseResult = validateString(path);
+  const parseResult = parseString(name, path);
 
   if (parseResult instanceof Error) return parseResult;
 

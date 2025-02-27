@@ -1,63 +1,72 @@
-import { User } from '@/user/user.model.ts';
+import { join, normalize } from '@std/path';
+import { db } from '@/config/config.service.ts';
+import { schema } from '@/persistence/sqlite.model.ts';
+import { Expr } from '@dldc/zendb';
 
-interface KvPost {
+export type Post = {
+  /**
+   * UUIDv4
+   */
+  id: string;
   title: string;
-  filePath: string[];
-  metadata: {
-    author: Deno.KvKey;
-    createdAt: Temporal.PlainDateTime;
-    lastUpdated: Temporal.PlainDateTime;
-  };
+  /**
+   * Email
+   */
+  author: string;
+  /**
+   * Full path to the markdown file, including filename and extension
+   */
+  path: string;
+  draft: boolean;
+  /**
+   * Stored as milliseconds from epoch
+   */
+  created_at: number;
+  /**
+   * Stored as milliseconds from epoch
+   */
+  modified_at: number;
+};
+
+function filenameFromTitle(title: string) {
+  return title.toLowerCase().replaceAll(/\b\s+\b/g, '_');
 }
 
-export class Post {
-  #postId: string;
-  #id: Deno.KvKey;
-  #title: string;
+export class PostEntity {
+  #post: Post;
   #content: string;
-  #draft: boolean;
-  #author: User;
 
-  constructor(
-    basePath: string[],
-    title: string,
-    author: User,
-    content: string = '',
-  ) {
-    this.#postId = crypto.randomUUID();
-    this.#id = ['posts', this.#postId];
-    this.#title = title;
+  private constructor(post: Post, content: string) {
+    this.#post = post;
     this.#content = content;
-    this.#draft = true;
-    this.#author = author;
   }
 
-  async persist() {
-    const kv = await this.kv.open();
-    await kv.set(this.#id, {
-      title: this.#title,
-      filePath: [...this.filesystem.path, `${this.#postId}.md`],
-      metadata: {
-        author: this.#author.id,
-        createdAt: Temporal.Now.plainDateTimeISO(),
-        lastUpdated: Temporal.Now.plainDateTimeISO(),
+  static new(title: string, author: string, content: string) {
+    return new PostEntity(
+      {
+        title,
+        author,
+        id: crypto.randomUUID(),
+        path: join(
+          normalize(Deno.cwd()),
+          'content',
+          `${filenameFromTitle(title)}.md`,
+        ),
+        draft: true,
+        created_at: Temporal.Now.instant().epochMilliseconds,
+        modified_at: Temporal.Now.instant().epochMilliseconds,
       },
-    });
-    return this.filesystem.writeFile(`${this.#postId}.md`, this.#content);
+      content,
+    );
   }
 
-  contents() {
-    return this.filesystem.readFile(`${this.#postId}.md`);
-  }
+  create() {}
 
-  static get(id: Deno.KvKey) {}
-  static remove(id: Deno.KvKey) {}
+  read() {}
 
-  public get title(): string {
-    return this.#title;
-  }
+  list() {}
 
-  public get draft(): boolean {
-    return this.#draft;
-  }
+  update() {}
+
+  delete() {}
 }

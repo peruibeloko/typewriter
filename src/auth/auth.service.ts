@@ -1,4 +1,4 @@
-import { Allowlist } from '@/auth/allowlist.model.ts';
+import { Auth } from "@/auth/auth.model.ts";
 import { User } from '@/user/user.model.ts';
 
 import { HTTPException } from '@hono/http-exception';
@@ -8,21 +8,20 @@ import { totp } from 'otplib';
 
 export async function signup(email: string, displayName: string) {
   if (!email) {
-    return new HTTPException(400, { message: 'Missing user email' });
+    throw new HTTPException(400, { message: 'Missing user email' });
   }
 
-  const allowlist = new Allowlist();
-
-  const registrationState = allowlist.isActive(email);
+  const registrationState = Auth.isActive(email);
 
   if (registrationState === null) {
-    return new HTTPException(403, { message: 'User not in allowlist' });
-  }
-  if (registrationState === true) {
-    return new HTTPException(409, { message: 'User already registered' });
+    throw new HTTPException(403, { message: 'User not in allowlist' });
   }
 
-  allowlist.register(email);
+  if (registrationState === true) {
+    throw new HTTPException(409, { message: 'User already registered' });
+  }
+
+  Auth.register(email);
 
   const totpSecret = encodeBase32(crypto.getRandomValues(new Uint8Array(20)));
 
@@ -35,12 +34,12 @@ export async function login(email: string, token: string) {
   const user = await User.get(email);
 
   if (!user) {
-    return new HTTPException(404, {
+    throw new HTTPException(404, {
       message: `No user for email ${email} was found`,
     });
   }
   if (!totp.check(token, user.secret)) {
-    return new HTTPException(400, { message: 'Invalid OTP' });
+    throw new HTTPException(400, { message: 'Invalid OTP' });
   }
 
   const signKey = await crypto.subtle.importKey(
@@ -53,8 +52,9 @@ export async function login(email: string, token: string) {
 
   return sign(
     {
-      exp: Temporal.Now.instant().add(Temporal.Duration.from({ hours: 12 }))
-        .epochMilliseconds / 1000,
+      exp:
+        Temporal.Now.instant().add(Temporal.Duration.from({ hours: 12 }))
+          .epochMilliseconds / 1000,
       aud: `${user.email}`,
     },
     signKey,

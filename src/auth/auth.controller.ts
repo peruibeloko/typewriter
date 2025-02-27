@@ -1,25 +1,20 @@
+import { LoginRequest, SignupRequest } from '@/auth/auth.middleware.ts';
 import * as AuthService from '@/auth/auth.service.ts';
-import { RequestLogin, RequestSignup } from '@/auth/auth.types.ts';
-
 import { Hono } from '@hono';
-import { HTTPException } from '@hono/http-exception';
+import { vValidator } from '@hono/valibot-validator';
 
 const auth = new Hono();
 
-auth.post('/login', async (c) => {
-  const body = await c.req.json<RequestLogin>();
-  const result = await AuthService.login(body.email, body.token);
-
-  if (result instanceof HTTPException) throw result;
-  else return c.text(result);
+auth.post('/login', vValidator('json', LoginRequest), async (c) => {
+  const { email, token } = c.req.valid('json');
+  const result = await AuthService.login(email, token);
+  return c.text(result);
 });
 
-auth.post('/signup', async (c) => {
-  const body = await c.req.json<RequestSignup>();
-  const result = await AuthService.signup(body.displayName, body.email);
-
-  if (result instanceof HTTPException) throw result;
-  else return c.text(result);
+auth.post('/signup', vValidator('json', SignupRequest), async (c) => {
+  const { displayName, email } = c.req.valid('json');
+  const result = await AuthService.signup(displayName, email);
+  return c.text(result);
 });
 
 export { auth };

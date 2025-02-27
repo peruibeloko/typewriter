@@ -1,8 +1,19 @@
-import { MissingConfigError } from '@/app/config/config.errors.ts';
-import { EnvVars, REQUIRED } from '@/app/app.types.ts';
+import { EnvParse, EnvVars, REQUIRED } from '@/config/config.types.ts';
+import { isError, MissingConfigError } from '@/config/config.errors.ts';
 
 export const missingConfigs = (config: Partial<EnvVars>) =>
   new Set(REQUIRED).difference(new Set(Object.keys(config)));
+
+export const definedOnly = (obj: EnvParse) =>
+  Object.entries(obj)
+    .filter(([_, v]) => !isError(v))
+    .reduce(
+      (acc, [k, v]) => ({
+        ...acc,
+        [k as keyof EnvVars]: v as string | boolean,
+      }),
+      {} as Partial<EnvVars>,
+    );
 
 export function parseString(name: string, x?: unknown) {
   if (x === void 0) return new MissingConfigError(name);
