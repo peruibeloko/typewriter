@@ -30,7 +30,7 @@ function setupShutdown() {
   const shutdown = new AbortController();
 
   const routine = () => {
-    console.log('Received SIGTERM, aborting current requests');
+    console.log('Shutting typewriter down, aborting current requests');
     shutdown.abort();
     console.log('Done ✅');
     console.log('Closing DB connection');
