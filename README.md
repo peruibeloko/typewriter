@@ -1,111 +1,84 @@
 # Typewriter
 
-Its a bare-bones CMS, there's really no reason to use this.
+Simple CMS written in TypeScript, runs on [Hono](https://hono.dev/) and [Deno](https://deno.com/). Data is stored using Markdown files on disk and SQLite for metadata.
 
 ## Installation
 
-Typewriter expects you to have a MongoDB instance running somewhere (I keep mine at a free tier cluster in MongoDB Atlas)
+0. Install Deno
+1. `git clone`
+2. `deno install`
+3. [Configure typewriter](#configuration)
+4. `deno task start`
 
-1. Clone this repo where you'd like to run it from
-2. `npm i` or `pnpm i`
-3. Set the `MONGODB_URL` (for data) and `BLOG_URL` (for CORS) environment variables (.env file at the root)
-4. `npm start`
+## Configuration
+
+Typewriter uses two sources for its config: Either a **TOML file** or **environment variables**. The former takes precedence over the latter.
+
+### TOML file example (for self hosting)
+
+```toml
+# A signing secret for your JWT
+JWT_SECRET = "some big random string for signing JWTs"
+
+# [Optional] Contains either:
+# - A folder where a database file will be created for you
+# - A database file itself
+DB_PATH = "/some/path/to/folder/or/typewriter.db"
+
+# [Optional] Enables console verbosity. Also prints all registered routes
+VERBOSE = false
+```
+
+### Environment variables example (for cloud hosting)
+
+```bash
+# A signing secret for your JWT
+export TYPEWRITER_JWT_SECRET="some big random string for signing JWTs"
+
+# [Optional] Contains either:
+# - A folder where a database file will be created for you
+# - A database file itself
+export TYPEWRITER_DB_PATH="/some/path/to/folder/or/typewriter.db"
+
+# [Optional] Enables console verbosity. Also prints all registered routes
+export TYPEWRITER_VERBOSE=false
+```
 
 ## Authentication
 
-I opted for a (relatively) simple no-password method for authentication which follows an unusual approach, which combines an allowlist with TOTP.
+Typewriter's authentication model is a combination of an allowlist with OTPs.
 
-All you need to do is create entries on the `allowlist` collection in the following format
+There are three steps:
 
-```json
-{
-  "_id": "john@example.com",
-  "isRegistered": false
-}
+1. Send a `register <email>` command on the typewriter CLI to get your email on the allowlist
+
+```
+> register test@example.com
+successfully registered test@example.com
 ```
 
-And send a `POST` request to `/auth/signup` with the following data
+2. Send a `POST` request to `/auth/signup` to get an OTP secret
 
 ```json
 {
+  "displayName": "John Smith",
   "email": "john@example.com"
 }
 ```
 
-To recieve the secret code used to configure your preferred TOTP generator, like Google Authenticator. It uses standard configuration (30 second steps and 6 digit long codes)
+3. Send a `POST` request to `/auth/login` to get your JWT
 
-You may invoke the `/auth/signup` endpoint manually and get the secret that way, or plug it into some frontend code and generate a QR Code from it.
+```json
+{
+  "email": "john@example.com",
+  "code": "123456",
+}
+```
 
 ## Usage
 
-Typewriter's interface with the world is a REST API, which provides basic blogkeeping funcionality (create posts, get posts, etc)
+Typewriter has its own web server, which answers to RESTful requests. The full API is outlined [here](https://carlinhos.dev.br/typewriter/swagger) (Not build yet)
 
-### `GET /post` - Get all posts
+It also provides a simple CLI for issuing administrative commands, such as registering a new user and gracefully shutting down the server.
 
-Returns a listing of the title, creation timestamp, author and title of all posts in a paginated fashion
-
-Control results using the `page` and `limit` (default is 10) query parameters.
-
-### `POST /post` - Create post (Auth needed)
-
-Creates a new post and stores it in the database.
-
-Payload
-
-```json
-{
-  "title": "My awesome post",
-  "author": "John Smith",
-  "post": "*This is some good stuff*"
-}
-```
-
-### `GET /post/count` - Count posts
-
-Returns how many posts there are in your blog
-
-### `GET /post/latest` - Get latest post ID
-
-Returns the ID for the latest post
-
-### `GET /post/first` - Get first post ID
-
-Returns the ID for the first post ever made. Ever.
-
-### `GET /post/random` - Get random post ID
-
-Returns the ID for a random post
-
-### `GET /post/:id` - Get post by ID
-
-Pretty straightforward.
-
-This is useful for accessing posts directly, using permalinks.
-
-### `PATCH /post/:id` - Update post (Auth needed)
-
-Updates the specified post
-
-Payload
-
-```json
-{
-  "title": "New Title!! (Now with 100% more examples!)"
-}
-```
-
-### `DELETE /post/:id` - Delete post (Auth needed)
-
-Deletes the specified post
-
-### `GET /post/:id/next` - Get next post ID
-
-- Tomorrow's post (You'll get the ID for this post)
-- Today's post (You are here)
-- Yesterday's post
-
-### `GET /post/:id/prev` - Get previous post ID
-
-- Tomorrow's post
-- Today's post (You are here)
-- Yesterday's post (You'll get the ID for this post)
+### Commands
