@@ -17,6 +17,8 @@ post.get('/', vValidator('query', PaginationSchema), (c) => {
   return c.json(posts);
 });
 
+// TODO Body validation
+
 post.post('/', checkAuth, async (c) => {
   const { title, author, content } = await c.req.json();
   Post.create(title, author, content);

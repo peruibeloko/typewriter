@@ -1,28 +1,19 @@
 import { PostEntity } from '@/posts/post.model.ts';
 
 export function paginatedList(page: number, size: number) {
-  return {};
+  return PostEntity.list(page, size);
 }
 
 export function create(title: string, author: string, content: string) {
   return PostEntity.new(title, author, content).create();
 }
 
-export async function getById(id: string) {
+export function getById(id: string) {
   return PostEntity.read(id);
 }
 
-export async function updateById(
-  id: string,
-  post?: PostEntity,
-  content?: string,
-) {
-  if (post === void 0 && content === void 0) {
-    return new Error('Nothing was provided to update');
-  }
+export function updateById(id: string, post: PostEntity, content: string) {}
 
-  if (post) {
-  }
+export function deleteById(id: string) {
+  PostEntity.delete(id);
 }
-
-export async function deleteById(id: string) {}

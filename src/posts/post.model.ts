@@ -32,6 +32,8 @@ function filenameFromTitle(title: string) {
   return title.toLowerCase().replaceAll(/\b\s+\b/g, '_');
 }
 
+// TODO Convert to builder
+
 export class PostEntity {
   #post: Post;
   #content: string;
@@ -44,9 +46,9 @@ export class PostEntity {
   static new(title: string, author: string, content: string) {
     return new PostEntity(
       {
+        id: crypto.randomUUID(),
         title,
         author,
-        id: crypto.randomUUID(),
         path: join(
           normalize(Deno.cwd()),
           'content',
@@ -60,13 +62,56 @@ export class PostEntity {
     );
   }
 
-  create() {}
+  create() {
+    Deno.writeTextFileSync(this.#post.path, this.#content);
+    db.exec(
+      schema.posts.insert({
+        id: this.#post.id,
+        title: this.#post.title,
+        author: this.#post.author,
+        path: this.#post.path,
+        draft: this.#post.draft,
+        created_at: this.#post.created_at,
+        modified_at: this.#post.modified_at,
+      }),
+    );
+  }
 
-  read() {}
+  static read(id: string) {
+    const postData = db.exec(
+      schema.posts
+        .query()
+        .where((c) => Expr.equal(c.id, Expr.literal(id)))
+        .first(),
+    );
+    const content = Deno.readTextFileSync(postData.path);
+    return new PostEntity(postData, content);
+  }
 
-  list() {}
+  static list(page: number, size: number) {
+    const posts = db.exec(
+      schema.posts
+        .query()
+        .andSortDesc((c) => c.created_at)
+        .offset(() => Expr.literal(page * size))
+        .limit(() => Expr.literal(size))
+        .all(),
+    );
+
+    return posts.map((post) => new PostEntity(post, ''));
+  }
 
   update() {}
 
-  delete() {}
+  static delete(id: string) {
+    const { path } = db.exec(
+      schema.posts
+        .query()
+        .select((c) => ({ path: c.path }))
+        .where((c) => Expr.equal(c.id, Expr.literal(id)))
+        .first(),
+    );
+    db.exec(schema.posts.delete((c) => Expr.equal(c.id, Expr.literal(id))));
+    Deno.removeSync(path);
+  }
 }
