@@ -12,7 +12,9 @@ export function getById(id: string) {
   return PostEntity.read(id);
 }
 
-export function updateById(id: string, post: PostEntity, content: string) {}
+export function updateById(id: string, post: PostEntity, content: string) {
+  // TODO write update logic
+}
 
 export function deleteById(id: string) {
   PostEntity.delete(id);
