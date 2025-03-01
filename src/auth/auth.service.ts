@@ -1,10 +1,14 @@
-import { Auth } from "@/auth/auth.model.ts";
+import { Auth } from '@/auth/auth.model.ts';
 import { User } from '@/user/user.model.ts';
 
 import { HTTPException } from '@hono/http-exception';
 import { sign } from '@hono/jwt';
 import { encodeBase32 } from '@std/encoding';
 import { totp } from 'otplib';
+
+export function register(email: string) {
+  Auth.register(email);
+}
 
 export async function signup(email: string, displayName: string) {
   if (!email) {
@@ -18,10 +22,10 @@ export async function signup(email: string, displayName: string) {
   }
 
   if (registrationState === true) {
-    throw new HTTPException(409, { message: 'User already registered' });
+    throw new HTTPException(409, { message: 'User already active' });
   }
 
-  Auth.register(email);
+  Auth.activate(email);
 
   const totpSecret = encodeBase32(crypto.getRandomValues(new Uint8Array(20)));
 
