@@ -77,8 +77,10 @@ successfully registered test@example.com
 
 ## Usage
 
-Typewriter has its own web server, which answers to RESTful requests. The full API is outlined [here](https://carlinhos.dev.br/typewriter/swagger) (Not build yet)
+Typewriter has its own web server, which answers to RESTful requests. The full API is outlined [here](https://carlinhos.dev.br/typewriter/swagger) (Not built yet)
 
 It also provides a simple CLI for issuing administrative commands, such as registering a new user and gracefully shutting down the server.
 
 ### Commands
+
+> TODO
