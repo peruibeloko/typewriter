@@ -18,7 +18,8 @@ export class ConfigParseError<T> extends Error {
 
 export function formatErrors(err: Error) {
   if (err instanceof ConfigParseError) {
-    return err.issues; // TODO
+    // TODO write error formatting
+    return err.issues;
   } else {
     err.message;
   }
