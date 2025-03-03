@@ -1,50 +1,44 @@
-import { join, normalize } from '@std/path';
 import { db } from '@/config/config.service.ts';
 import { schema } from '@/persistence/sqlite.model.ts';
 import { Expr } from '@dldc/zendb';
+import { join, normalize } from '@std/path';
+import * as v from 'valibot';
 
 function filenameFromTitle(title: string) {
   return title.toLowerCase().replaceAll(/\b\s+\b/g, '_');
 }
 
-export type Post = {
-  /**
-   * UUIDv4
-   */
-  id: string;
-  title: string;
-  /**
-   * Email
-   */
-  author: string;
-  /**
-   * Full path to the markdown file, including filename and extension
-   */
-  path: string;
-  draft: boolean;
-  /**
-   * Stored as milliseconds from epoch
-   */
-  created_at: number;
-  /**
-   * Stored as milliseconds from epoch
-   */
-  modified_at: number;
-};
+export const PostSchema = v.object({
+  id: v.pipe(v.string(), v.uuid()),
+  title: v.pipe(v.string()),
+  author: v.pipe(v.string()),
+  path: v.pipe(v.string()),
+  draft: v.pipe(v.boolean()),
+  created_at: v.pipe(v.number(), v.integer()),
+  modified_at: v.pipe(v.number(), v.integer()),
+  content: v.pipe(v.string()),
+});
+
+export const UpdatePostSchema = v.partial(
+  v.pick(PostSchema, ['draft', 'title', 'content']),
+);
+export const CreatePostSchema = v.pick(PostSchema, [
+  'title',
+  'author',
+  'content',
+]);
+
+export type Post = v.InferInput<typeof PostSchema>;
 
 export class PostBuilder {
   #id: null | string = null;
   #title: null | string = null;
   #author: null | string = null;
   #path: null | string = null;
-  #content: null | string = null;
   #draft: null | boolean = null;
   #created_at: null | number = null;
   #modified_at: null | number = null;
-
-  getContent() {
-    return this.#content ?? '';
-  }
+  #content: null | string = null;
 
   id(v: string) {
     this.#id = v;
@@ -98,9 +92,10 @@ export class PostBuilder {
     if (this.#draft !== null) yield ['draft', this.#draft];
     if (this.#created_at !== null) yield ['created_at', this.#created_at];
     if (this.#modified_at !== null) yield ['modified_at', this.#modified_at];
+    if (this.#content !== null) yield ['content', this.#content];
   }
 
-  fromPost(postData: Post, content?: string) {
+  fromPost(postData: Post) {
     this.#id = postData.id;
     this.#title = postData.title;
     this.#author = postData.author;
@@ -108,7 +103,7 @@ export class PostBuilder {
     this.#draft = postData.draft;
     this.#created_at = postData.created_at;
     this.#modified_at = postData.modified_at;
-    if (content) this.#content = content;
+    this.#content = postData.content;
     return this;
   }
 
@@ -121,6 +116,7 @@ export class PostBuilder {
       draft: this.#draft ?? true,
       created_at: this.#created_at ?? 0,
       modified_at: this.#modified_at ?? 0,
+      content: this.#content ?? '',
     };
   }
 
@@ -150,11 +146,9 @@ export class PostBuilder {
 
 export class PostEntity {
   #post: Post;
-  #content: string;
 
   constructor(builder: PostBuilder) {
     this.#post = builder.toPost();
-    this.#content = builder.getContent();
   }
 
   #toPost(): Post {
@@ -166,15 +160,27 @@ export class PostEntity {
       draft: this.#post.draft,
       created_at: this.#post.created_at,
       modified_at: this.#post.modified_at,
+      content: this.#post.content,
     };
   }
 
-  #getPath() {
+  get info() {
+    return {
+      id: this.#post.id,
+      title: this.#post.title,
+      author: this.#post.author,
+      draft: this.#post.draft,
+      created_at: this.#post.created_at,
+      modified_at: this.#post.modified_at,
+    };
+  }
+
+  static getPathById(id: string) {
     const { path } = db.exec(
       schema.posts
         .query()
         .select((c) => ({ path: c.path }))
-        .where((c) => Expr.equal(c.id, Expr.literal(this.#post.id)))
+        .where((c) => Expr.equal(c.id, Expr.literal(id)))
         .first(),
     );
 
@@ -182,19 +188,24 @@ export class PostEntity {
   }
 
   create() {
-    Deno.writeTextFileSync(this.#post.path, this.#content);
+    Deno.writeTextFileSync(this.#post.path, this.#post.content);
     db.exec(schema.posts.insert(this.#toPost()));
   }
 
   static read(id: string) {
+    const metadata = this.readMetadata(id);
+    metadata.#post.content = Deno.readTextFileSync(metadata.#post.path);
+    return metadata;
+  }
+
+  static readMetadata(id: string) {
     const postData = db.exec(
       schema.posts
         .query()
         .where((c) => Expr.equal(c.id, Expr.literal(id)))
         .first(),
     );
-    const content = Deno.readTextFileSync(postData.path);
-    return new PostBuilder().fromPost(postData).content(content).build();
+    return new PostBuilder().fromPost({ ...postData, content: '' }).build();
   }
 
   static list(page: number, size: number) {
@@ -208,16 +219,16 @@ export class PostEntity {
     );
 
     return posts.map((postData) =>
-      new PostBuilder().fromPost(postData).build(),
+      new PostBuilder().fromPost({ ...postData, content: '' }).build(),
     );
   }
 
-  update(id: string, builder: PostBuilder) {
+  static update(id: string, builder: PostBuilder) {
     const data = Object.fromEntries(builder) as Partial<Post>;
     db.exec(schema.posts.updateEqual(data, { id }));
 
-    if (!builder.getContent()) return;
-    Deno.writeTextFileSync(this.#getPath(), builder.getContent());
+    if (!data.content) return;
+    Deno.writeTextFileSync(this.getPathById(id), data.content);
   }
 
   static delete(id: string) {
