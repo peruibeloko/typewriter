@@ -30,6 +30,8 @@ export const CreatePostSchema = v.pick(PostSchema, [
 
 export type Post = v.InferInput<typeof PostSchema>;
 
+// TODO refactor this
+
 export class PostBuilder {
   #id: null | string = null;
   #title: null | string = null;
